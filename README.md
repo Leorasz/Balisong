@@ -1,5 +1,4 @@
 # BALISONG
-!State Diagram (stateDiagram.png)
 The aim of this project was to help LLMs deal with Causal Inference. For example, if I have “At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually,” and then I'm told "Presume the port rail network is offline. How would that affect the rest of the system?", then I should respond with something like "It would mean the Port's seven container would not have rail network service. You would not be able to use the near-dock railyard." LLMs are notoriously bad at this, as they just predict the next token, and can't visualize the steps in between. So, I've developed a system to help it out. Here's how it works:  
 
 I created a sort of language I call "Causlang". Causlang is written as causer:affected:causesorinhibits. The effects of the string of causations are then calculated. For example, if a causes b, and b causes c, and then b is turned off, c gets turned off as well.  
