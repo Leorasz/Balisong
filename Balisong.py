@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from openai import OpenAI
 from transformers import pipeline
 
@@ -10,18 +11,25 @@ os.environ["OPENAI_API_KEY"] = input("OpenAI API key: ")
 """
 TODO: 
 -Get rid of warning message
--Make updater method if different classification model
 -Error logging
--Change Causlang to be more understandable by the machine?
+-Better validation
 """
 
+logging.basicConfig(
+    filename="error_log.log",
+    level=logging.ERROR,
+    format="%(asctime)s:%(levelname)s:%(message)s"
+)
+
+def logError(error):
+    logging.error(error)
+    logError(error)
 
 class Balisong:
 
     def __init__(
         self,
         sentiment_threshhold=0.55,
-        sentiment_model=None,
         openai_model="gpt-4",
         final_validation=False,
         DEBUG=0,
@@ -31,16 +39,12 @@ class Balisong:
         self.client = OpenAI()
         self.final_validation = final_validation
 
-        if sentiment_model:
-            raise ValueError("Functionality for other models not implemented yet")
-            self.model = self.makeModel(sentiment_model)
-        else:
-            sentiment_model = (  # set up default sentiment classifier model
-                "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
-            )
-            if self.DEBUG >= 1:
-                print("Getting the sentiment classifier model ready")
-            self.model = pipeline("zero-shot-classification", model=sentiment_model)
+        sentiment_model = (  # set up default sentiment classifier model
+            "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+        )
+        if self.DEBUG >= 1:
+            print("Getting the sentiment classifier model ready")
+        self.model = pipeline("zero-shot-classification", model=sentiment_model)
 
         self.openai_model = openai_model
 
@@ -76,7 +80,7 @@ class Balisong:
         elif "\n" in inp:
             relationships = inp.split("\n")
         else:
-            raise ValueError(
+            logError(
                 f"Unsupported separation type, Causlang relationships can only by separated by a comma or newline"
             )
 
@@ -89,12 +93,10 @@ class Balisong:
         def getNode(
             name,
         ):  # for looking up the node object of a node given just its name
-            if self.DEBUG >= 2:
-                print(f"Looking for node with name {name}")
             for node in nodes:
                 if node.name == name or node.name == name[1:] or node.name[1:] == name:
                     return node
-            raise ValueError(f"No node of name {name}")
+            logError(f"No node of name {name}")
 
         for relationship in relationships:
             if not relationship:  # sometimes it gets empty relationships
@@ -185,7 +187,7 @@ class Balisong:
         elif "\n" in inp:
             relationships = inp.split("\n")
         else:
-            raise ValueError(
+            logError(
                 f"Unsupported separation type, Causlang relationships can only by separated by a comma or newline"
             )
 
@@ -203,7 +205,7 @@ class Balisong:
             for node in nodes:
                 if node.name == name:
                     return node
-            raise ValueError(f"No node of name {name}")
+            logError(f"No node of name {name}")
 
         for relationship in relationships:
             if not relationship:  # sometimes it gets empty relationships
@@ -333,7 +335,7 @@ class Balisong:
                     return payload
             else:
                 lettersIn = 0
-        raise ValueError(f'"{marker}" was never found in the given string "{stri}"')
+        logError(f'"{marker}" was never found in the given string "{stri}"')
 
     def performCausalInference(self, text, scenario):  # do the whole thing
         if self.DEBUG >= 1:
@@ -442,9 +444,6 @@ class Balisong:
     def performCausalInference2(self, text, scenario):  # do the whole thing
         if self.DEBUG >= 1:
             print("Performing causal inference")
-        if self.DEBUG >= 2:
-            print("Finished loading long strings")
-
         basicSystem = (
             "You are an expert in causality, ready to help the user with any request."
         )
