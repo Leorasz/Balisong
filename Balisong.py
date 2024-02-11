@@ -24,7 +24,7 @@ logging.basicConfig(
 
 def logError(error):
     logging.error(error)
-    logError(error)
+    raise ValueError(error)
 
 class Balisong:
 
