@@ -3,8 +3,8 @@ The aim of this project was to help LLMs deal with Causal Inference. For example
 
 I created a sort of language I call "Causlang". Causlang is written as causer:affected:causesorinhibits. The effects of the string of causations are then calculated. For example, if a causes b, and b causes c, and then b is turned off, c gets turned off as well.  
 
-I teach the LLM I'm using (in this case ChatGPT) how it works, and then tell it to convert the given text (i.e. "At the Port of Los Angeles...") into that language. I ask it again to check its work, and then use a sort of sentiment classifier to see if it thinks it did well.  
+I teach the LLM I'm using (in this case ChatGPT) how it works, and then tell it to convert the given text (i.e. "At the Port of Los Angeles...") into that language. I ask it again to check its work, and correct it if it's not right.
 
-Then I ask it to change that Causlang script to reflect the scenario (i.e. "Presume the port rail network..."). Once again, this is validated using the same process mentioned above.  
+Then I ask it to change that Causlang script to reflect the scenario (i.e. "Presume the port rail network..."). The work is once again checked and corrected if need be.
 
-Finally, I tell it whether or not each node is activated for both before and after the scenario, and ask it to describe the change. This is again validated, and finally, you get the result.
+Finally, I tell it whether or not each node is activated for both before and after the scenario, and ask it to describe the change. This is the end result.
