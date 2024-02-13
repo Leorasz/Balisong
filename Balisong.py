@@ -12,8 +12,6 @@ warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 
 """
 TODO: 
--Make final response to-the-point and not extrapolating everything
--Don't let punctuation mess it up
 """
 
 logging.basicConfig(
@@ -30,11 +28,9 @@ class Balisong:
 
     def __init__(
         self,
-        sentiment_threshhold=0.55,
         openai_model="gpt-4",
         DEBUG=0,
     ):
-        self.threshhold = sentiment_threshhold
         self.openai_model = openai_model
         self.DEBUG = DEBUG
         self.client = OpenAI()
@@ -49,7 +45,7 @@ class Balisong:
             if self.color == "blue":
                 for child in self.children:
                     child.color = "blue" if child.color != "red" else "red"
-            loader += [child for child in self.children]
+            loader += self.children
 
     def interpretCauslang(self, inp):
         nodenames = set()
