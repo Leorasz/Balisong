@@ -7,27 +7,31 @@ os.environ["OPENAI_API_KEY"] = input("OpenAI API key: ")
 """
 TODO: 
 -Make sure everything in Causlang is ok
--Account for errors
+-Get it to stop making its own conclusions
 """
 
 logging.basicConfig(
     filename="error_log.log",
     level=logging.ERROR,
-    format="%(asctime)s:%(levelname)s:%(message)s"
+    format="%(asctime)s:%(levelname)s:%(message)s",
 )
+
 
 def logError(error):
     logging.error(error)
     raise ValueError(error)
+
 
 class Balisong:
 
     def __init__(
         self,
         openai_model="gpt-4",
+        exception_limit = 3,
         DEBUG=0,
     ):
         self.openai_model = openai_model
+        self.exception_limit = exception_limit
         self.DEBUG = DEBUG
         self.client = OpenAI()
 
@@ -183,65 +187,100 @@ class Balisong:
     def makeInitialGraph(self, text, system):
         if self.DEBUG >= 1:
             print("Starting out, making the original Causlang script.")
-        initialGraph = self.getText(
-            system,
-            f"Make me the Causlang string for '{text}'. Walk through and explain each step of your reasoning. End your response with 'RES:' and then the all the relationships in Causlang in a comma-separated list.",
-        )
-        initialGraph = self.findPayload(initialGraph, "RES:")
+        initialInput = f"Make me the Causlang string for '{text}'. Walk through and explain each step of your reasoning. End your response with 'RES:' and then the all the relationships in Causlang in a comma-separated list."
+        exceptionTimes = 0
+        while True:
+            try:
+                initialGraph = self.getText(system, initialInput)
+                initialGraph = self.findPayload(initialGraph, "RES:")
+                break
+            except Exception as e:
+                if self.DEBUG >= 1: print(f"Caught exception {e}, trying again")
+                exceptionTimes += 1
+                if exceptionTimes == self.exception_limit:
+                    logError("Got an exception too many times for this one, force stopping")
+
         if self.DEBUG >= 1:
             print("Now correcting the initialGraph")
         initialValidatorInput = f"A Causlang string has been generated for the following text: '{text}'. The Causlang string is '{initialGraph}'. Does this fit the scenario and accurately describe it causally, going over every aspect? Walk through each step of your reasoning. If it's incorrect, then make corrections. End your response with 'RES: ' and then either the old Causlang string if it was correct or the corrected Causlang string."
-        initialGraph = self.getText(system, initialValidatorInput)
-        initialGraph = self.findPayload(initialGraph, "RES:")
+        exceptionTimes = 0
+        while True:
+            try:
+                initialGraph = self.getText(system, initialValidatorInput)
+                initialGraph = self.findPayload(initialGraph, "RES:")
+                break
+            except Exception as e:
+                if self.DEBUG >= 1: print(f"Caught exception {e}, trying again")
+                exceptionTimes += 1
+                if exceptionTimes == self.exception_limit:
+                    logError("Got an exception too many times for this one, force stopping")
         return initialGraph
-    
+
     def makeScenarioGraph(self, text, scenario, system, initialGraph):
         if self.DEBUG >= 1:
             print("Now onto altering the graph to reflect the scenario.")
-        scenarioGraph = self.getText(
-            system,
-            f"The original text was '{text}', and the Causlang generated for it was '{initialGraph}'. I want you to modify the Causlang string to reflect this scenario: '{scenario}'. Walk through each and every step of your reasoning. End your response with 'RES:' and then all the relationships in Causlang in a comma-separated list.",
-        )
-        scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+        scenarioInput = f"The original text was '{text}', and the Causlang generated for it was '{initialGraph}'. I want you to modify the Causlang string to reflect this scenario: '{scenario}'. Walk through each and every step of your reasoning. End your response with 'RES:' and then all the relationships in Causlang in a comma-separated list."
+        exceptionTimes = 0
+        while True:
+            try:
+                scenarioGraph = self.getText(system, scenarioInput)
+                scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+                break
+            except Exception as e:
+                if self.DEBUG >= 1: print(f"Caught exception {e}, trying again")
+                exceptionTimes += 1
+                if exceptionTimes == self.exception_limit:
+                    logError("Got an exception too many times for this one, force stopping")
+
         if self.DEBUG >= 1:
             print("Validating the scenario graph")
-        scenarioValidatorInput = (
-            f'The original text was "{text}", and the original Causlang generated for it was "{initialGraph}". Then, the scenario "{scenario}" took place, and the new Causlang is "{scenarioGraph}". Does this fit the original text and the scenario, and accurately describe every aspect? Walk through each step of your reasoning. If it\'s incorrect, make corrections. End your response with "RES:" and then either the old Causlang if it was correct or the new corrected Causlang if it wasn\'t.'
-        )
-        scenarioGraph = self.getText(system, scenarioValidatorInput)
-        scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+        scenarioValidatorInput = f'The original text was "{text}", and the original Causlang generated for it was "{initialGraph}". Then, the scenario "{scenario}" took place, and the new Causlang is "{scenarioGraph}". Does this fit the original text and the scenario, and accurately describe every aspect? Walk through each step of your reasoning. If it\'s incorrect, make corrections. End your response with "RES:" and then either the old Causlang if it was correct or the new corrected Causlang if it wasn\'t.'
+        exceptionTimes = 0
+        while True:
+            try:
+                scenarioGraph = self.getText(system, scenarioValidatorInput)
+                scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+                break
+            except Exception as e:
+                if self.DEBUG >= 1: print(f"Caught exception {e}, trying again")
+                exceptionTimes += 1
+                if exceptionTimes == self.exception_limit:
+                    logError("Got an exception too many times for this one, force stopping")
         return scenarioGraph
-    
+
     def makeComparison(self, text, scenario, system, initialGraph, scenarioGraph):
         if self.DEBUG >= 1:
-                print(
-                    f"Now we have both graphs, time to get their results and then compare them. The initial graph is: \n{initialGraph}\nWhile the scneario graph is:\n{scenarioGraph}"
-                )
+            print(
+                f"Now we have both graphs, time to get their results and then compare them. The initial graph is: \n{initialGraph}\nWhile the scneario graph is:\n{scenarioGraph}"
+            )
         initialResults = self.interpretCauslang(initialGraph)  # computing the effects
         scenarioResults = self.interpretCauslang(scenarioGraph)
         if self.DEBUG >= 1:
             print("Results from both graphs calculated, now onto comparing them.")
-        comparerInput = (  # now converting the difference into natural language
-            f"Here's the situation: {text} Here's the status of all the entities in this scenario: {initialResults} Now, {scenario} The status of everything is now {scenarioResults}. How would you describe the changes that took place? What entities are now active or inactive?"
-        )
+        comparerInput = f"Here's the situation: {text} Here's the status of all the entities in this scenario: {initialResults} Now, {scenario} The status of everything is now {scenarioResults}. How would you describe the changes that took place? What entities are now active or inactive?"  # now converting the difference into natural language
         comparerOutput = self.getText(system, comparerInput)
         return comparerOutput
-    
+
     def performCausalInference(self, text, scenario):  # do the whole thing
         if self.DEBUG >= 1:
             print("Performing causal inference")
-        basicSystem = "You are an expert in causality, ready to help the user with any request."
+        basicSystem = (
+            "You are an expert in causality, ready to help the user with any request."
+        )
         with open("expertSystem.txt", "r") as file:
             expertSystem = file.read()
         initialGraph = self.makeInitialGraph(text, expertSystem)
-        scenarioGraph = self.makeScenarioGraph(text, scenario, expertSystem, initialGraph)
-        comparison = self.makeComparison(text, scenario, basicSystem, initialGraph, scenarioGraph)
+        scenarioGraph = self.makeScenarioGraph(
+            text, scenario, expertSystem, initialGraph
+        )
+        comparison = self.makeComparison(
+            text, scenario, basicSystem, initialGraph, scenarioGraph
+        )
         return comparison
-        
+
 
 bl = Balisong(DEBUG=2)
 
 text = "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually."
 scenario = "If the Port's seven container slips were closed, how would that affect the port of los angeles?"
 print(bl.performCausalInference(text, scenario))
-
