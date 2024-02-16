@@ -4,12 +4,6 @@ from openai import OpenAI
 
 os.environ["OPENAI_API_KEY"] = input("OpenAI API key: ")
 
-"""
-TODO: 
--Make sure everything in Causlang is ok
--Get it to stop making its own conclusions
-"""
-
 logging.basicConfig(
     filename="error_log.log",
     level=logging.ERROR,
@@ -257,7 +251,7 @@ class Balisong:
         scenarioResults = self.interpretCauslang(scenarioGraph)
         if self.DEBUG >= 1:
             print("Results from both graphs calculated, now onto comparing them.")
-        comparerInput = f"Here's the situation: {text} Here's the status of all the entities in this scenario: {initialResults} Now, {scenario} The status of everything is now {scenarioResults}. How would you describe the changes that took place? What entities are now active or inactive?"  # now converting the difference into natural language
+        comparerInput = f"Here's the situation: {text} Here's the status of all the entities in this scenario: {initialResults} Now, {scenario} The status of everything is now {scenarioResults}. How would you describe the changes that took place? What entities are now active or inactive? Don't extrapolate or use your own knowledge, just describe the situation using the information that has been given to you."  # now converting the difference into natural language
         comparerOutput = self.getText(system, comparerInput)
         return comparerOutput
 
