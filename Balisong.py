@@ -82,10 +82,7 @@ class Balisong:
                 continue
             if self.DEBUG >= 2:
                 print(f"On relationship {relationship}")
-            if ":" in relationship:
-                components = relationship.split(":")
-                components = [self.cleanText(component) for component in components]
-            else:
+            if ":" not in relationship:
                 relationship = self.cleanText(relationship)
                 if relationship[1:] in nodenames:
                     getNode(relationship[1:]).color = "red"
@@ -95,6 +92,10 @@ class Balisong:
                     nodes.append(turnedOff)
                     turnedOff.color = "red"
                 continue
+                
+            components = relationship.split(":")
+            components = [self.cleanText(component) for component in components]
+                
             if components[0] not in nodenames:  # makes new node
                 causer = self.Node(components[0])
                 nodenames.add(components[0])
