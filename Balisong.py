@@ -17,6 +17,9 @@ def logError(error):
 """
 TODO:
 -Make sure it doesn't do something weird with the annual growth
+-Small refactor of interpretCauslang, weird if-elses, need better readability
+-Self initial and scenario graph?
+-Remove example from Balisong.py, maybe to new example.py?
 """
 
 class Balisong:
@@ -63,7 +66,7 @@ class Balisong:
             relationships = inp.split("\n")
         else:
             logError(
-                f"Unsupported separation type, Causlang relationships can only by separated by a comma or newline"
+                "Unsupported separation type, Causlang relationships can only by separated by a comma or newline"
             )
 
         if self.DEBUG >= 2:
