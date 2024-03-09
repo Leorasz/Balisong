@@ -1,0 +1,50 @@
+[
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles online:intermodal containers using Port,intermodal containers using Port:Port rail network online,Port rail network online:on-dock railyards in action,on-dock railyards in action:container terminals being served'",
+        "initialActivations": "Port of Los Angeles online is active\nintermodal containers using Port is active\nPort rail network online is active\non-dock railyards in action is active\ncontainer terminals being served is active\n",
+        "scenario": "The Port of Los Angeles has gone offline.",
+        "scenarioCausalGraph": " 'Port of Los Angeles online:intermodal containers using Port,intermodal containers using Port:Port rail network online,Port rail network online:on-dock railyards in action,on-dock railyards in action:container terminals being served,-intermodal containers using Port'",
+        "scenarioActivations": "Port of Los Angeles online is active\nintermodal containers using Port is inactive\nPort rail network online is inactive\non-dock railyards in action is inactive\ncontainer terminals being served is inactive\n"
+    },
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles operational:intermodal containers transportation enabled,Port of Los Angeles operational:Port rail network working,Port rail network working:near-dock railyard serving,Port rail network working:on-dock railyards serving,on-dock railyards serving:container terminals operational,near-dock railyard serving:container terminals operational,on-dock rail usage increasing'.",
+        "initialActivations": "Port of Los Angeles operational is active\nintermodal containers transportation enabled is active\nPort rail network working is active\nnear-dock railyard serving is active\non-dock railyards serving is active\ncontainer terminals operational is active\nn-dock rail usage increasing is inactive\n",
+        "scenario": "The intermodal containers have been destroyed.",
+        "scenarioCausalGraph": " 'Port of Los Angeles operational:intermodal containers transportation enabled,Port of Los Angeles operational:Port rail network working,Port rail network working:near-dock railyard serving,Port rail network working:on-dock railyards serving,on-dock railyards serving:container terminals operational,near-dock railyard serving:container terminals operational,on-dock rail usage increasing,-intermodal containers transportation enabled'.",
+        "scenarioActivations": "Port of Los Angeles operational is active\nintermodal containers transportation enabled is inactive\nPort rail network working is active\nnear-dock railyard serving is active\non-dock railyards serving is active\ncontainer terminals operational is active\nn-dock rail usage increasing is inactive\n"
+    },
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles online:one-third containers utilizing rail, one-third containers utilizing rail:near-dock railyard in use, one-third containers utilizing rail:on-dock railyards in use, on-dock railyards in use:container terminals in use'",
+        "initialActivations": "Port of Los Angeles online is active\none-third containers utilizing rail is active\nnear-dock railyard in use is active\non-dock railyards in use is active\ncontainer terminals in use is active\n",
+        "scenario": "The Port rail network has been shut down.",
+        "scenarioCausalGraph": " \"Port of Los Angeles online:one-third containers utilizing rail, one-third containers utilizing rail:near-dock railyard in use, one-third containers utilizing rail:on-dock railyards in use,-one-third containers utilizing rail,-near-dock railyard in use,-on-dock railyards in use",
+        "scenarioActivations": "Port of Los Angeles online is active\none-third containers utilizing rail is inactive\nnear-dock railyard in use is inactive\non-dock railyards in use is inactive\n"
+    },
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles operational:intermodal containers operational,intermodal containers operational:Port rail network used,Port rail network used:near-dock railyard used,Port rail network used:on-dock railyards used,on-dock railyards used:container terminals served,on-dock railyards used:on-dock rail growing annually.'",
+        "initialActivations": "Port of Los Angeles operational is active\nintermodal containers operational is active\nPort rail network used is active\nnear-dock railyard used is active\non-dock railyards used is active\ncontainer terminals served is active\non-dock rail growing annually is active\n",
+        "scenario": "The near-dock railyards have been destroyed.",
+        "scenarioCausalGraph": " 'Port of Los Angeles operational:intermodal containers operational,intermodal containers operational:Port rail network used,Port rail network used:near-dock railyard used,Port rail network used:on-dock railyards used,on-dock railyards used:container terminals served,on-dock railyards used:on-dock rail growing annually,-near-dock railyard used'.",
+        "scenarioActivations": "Port of Los Angeles operational is active\nintermodal containers operational is active\nPort rail network used is active\nnear-dock railyard used is inactive\non-dock railyards used is active\ncontainer terminals served is active\non-dock rail growing annually is active\n"
+    },
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles online:near-dock railyard working,Port of Los Angeles online:on-dock railyards working,near-dock railyard working:container terminals served,on-dock railyards working:container terminals served,container terminals served:intermodal containers using Port rail network,Port of Los Angeles online:on-dock rail usage growing'",
+        "initialActivations": "Port of Los Angeles online is active\nnear-dock railyard working is active\non-dock railyards working is active\ncontainer terminals served is active\nintermodal containers using Port rail network is active\non-dock rail usage growing is active\n",
+        "scenario": "The on-dock railyards have been destroyed.",
+        "scenarioCausalGraph": " 'Port of Los Angeles online:near-dock railyard working, Port of Los Angeles online:on-dock railyards working, -on-dock railyards working, near-dock railyard working:container terminals served, on-dock railyards working:container terminals served, -on-dock railyards working:container terminals served, container terminals served:intermodal containers using Port rail network, Port of Los Angeles online:on-dock rail usage growing'",
+        "scenarioActivations": "Port of Los Angeles online is active\nnear-dock railyard working is active\non-dock railyards working is inactive\ncontainer terminals served is active\n-on-dock railyards working is active\nintermodal containers using Port rail network is active\non-dock rail usage growing is active\n"
+    },
+    {
+        "text": "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually.",
+        "initialCausalGraph": " 'Port of Los Angeles active:one-third intermodal containers using rail network,one-third intermodal containers using rail network:rail network utilized,rail network utilized:on-dock railyards and near-dock railyard active,on-dock railyards active:seven container terminals served,on-dock railyards active:increase in on-dock railyard usage'",
+        "initialActivations": "Port of Los Angeles active is active\none-third intermodal containers using rail network is active\nrail network utilized is active\non-dock railyards and near-dock railyard active is active\non-dock railyards active is active\nseven container terminals served is active\nincrease in on-dock railyard usage is active\n",
+        "scenario": "The container terminals have been destroyed.",
+        "scenarioCausalGraph": "'Port of Los Angeles active:one-third intermodal containers using rail network,one-third intermodal containers using rail network:rail network utilized,rail network utilized:on-dock railyards and near-dock railyard active,on-dock railyards active:container terminals active,container terminals active:increase in on-dock railyard usage,-container terminals active'",
+        "scenarioActivations": "Port of Los Angeles active is active\none-third intermodal containers using rail network is active\nrail network utilized is active\non-dock railyards and near-dock railyard active is active\non-dock railyards active is active\ncontainer terminals active is inactive\nincrease in on-dock railyard usage is inactive\n"
+    }
+]

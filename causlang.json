@@ -1,0 +1,13 @@
+[
+    {
+        "causer": "Port of LA",
+        "affected": "Port rail network"
+    },
+    {
+        "causer": "Port rail network",
+        "affected": "on-dock railyards"
+    },
+    {
+        "negated": "Port rail network"
+    }
+]

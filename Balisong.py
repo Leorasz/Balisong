@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 from openai import OpenAI
 
@@ -16,10 +17,6 @@ def logError(error):
 
 """
 TODO:
--Make sure it doesn't do something weird with the annual growth
--Small refactor of interpretCauslang, weird if-elses, need better readability
--Self initial and scenario graph?
--Remove example from Balisong.py, maybe to new example.py?
 """
 
 class Balisong:
@@ -87,6 +84,8 @@ class Balisong:
                 print(f"On relationship {relationship}")
             if ":" not in relationship:
                 relationship = self.cleanText(relationship)
+                if relationship[0] != "-":
+                    logError(f"Invalid relationship '{relationship}'")
                 if relationship[1:] in nodenames:
                     getNode(relationship[1:]).color = "red"
                 else:
@@ -103,7 +102,6 @@ class Balisong:
                 causer = self.Node(components[0])
                 nodenames.add(components[0])
                 nodes.append(causer)
-
             else:
                 causer = getNode(components[0])
 
@@ -164,14 +162,13 @@ class Balisong:
         start = 0
         lettersIn = 0
         for i in range(len(stri) - 1, -1, -1):
-            if stri[i] == rekarm[lettersIn]:
+            if stri[i].lower() == rekarm[lettersIn].lower():
                 if lettersIn == 0:
                     start = i
                 lettersIn += 1
                 if lettersIn == len(rekarm):
                     payload = stri[start + 1 :]
-                    payload = payload[1:] if payload[0] == '"' else payload
-                    payload = payload[:-1] if payload[-1] == '"' else payload
+                    payload = self.cleanText(payload)
                     if self.DEBUG >= 2:
                         print(f"The payload of the string was {payload}")
                     return payload
@@ -276,9 +273,51 @@ class Balisong:
         )
         return comparison
 
+    def makeData(self, text, scenarios):
+        with open("expertSystem.txt","r") as file:
+            system = file.read()
+        initialInput = f"Make me the Causlang string for '{text}'. Walk through and explain each step of your reasoning. End your response with 'RES:' and then the all the relationships in Causlang in a comma-separated list."
+        final = []
+        for scenario in scenarios:
+            print(f"Now onto scenario: {scenario}")
+            while True: 
+                try:
+                    initialGraph = self.getText(system,initialInput)
+                    initialGraph = self.findPayload(initialGraph, "RES:")
+                    print("Done did the initial initial")
+                    initialValidatorInput = f"A Causlang string has been generated for the following text: '{text}'. The Causlang string is '{initialGraph}'. Does this fit the scenario and accurately describe it causally, going over every aspect? Walk through each step of your reasoning. If it's incorrect, then make corrections. End your response with 'RES: ' and then either the old Causlang string if it was correct or the corrected Causlang string." 
+                    initialGraph = self.getText(system, initialValidatorInput)
+                    initialGraph = self.findPayload(initialGraph, "RES:")
+                    print("Done did the initial validation")
+                    stuff = {"text":text,"initialCausalGraph":initialGraph,"initialActivations":self.interpretCauslang(initialGraph),"scenario":scenario}
+                    scenarioInput = f"The original text was '{text}', and the Causlang generated for it was '{initialGraph}'. I want you to modify the Causlang string to reflect this scenario: '{scenario}'. Walk through each and every step of your reasoning. End your response with 'RES:' and then all the relationships in Causlang in a comma-separated list."
+                    scenarioGraph = self.getText(system, scenarioInput)
+                    scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+                    print("Done did the initial scenario")
+                    scenarioValidatorInput = f'The original text was "{text}", and the original Causlang generated for it was "{initialGraph}". Then, the scenario "{scenario}" took place, and the new Causlang is "{scenarioGraph}". Does this fit the original text and the scenario, and accurately describe every aspect? Walk through each step of your reasoning. If it\'s incorrect, make corrections. End your response with "RES:" and then either the old Causlang if it was correct or the new corrected Causlang if it wasn\'t.'
+                    scenarioGraph = self.getText(system, scenarioValidatorInput)
+                    scenarioGraph = self.findPayload(scenarioGraph, "RES:")
+                    print("Done did the scenario validation")
+                    stuff["scenarioCausalGraph"] = scenarioGraph
+                    stuff["scenarioActivations"] = self.interpretCauslang(scenarioGraph)
+                    final.append(stuff)
+                    break
+                except Exception as e:
+                    print("Oh no got ", e)
+        with open("poladata.json","w") as file:
+            json.dump(final, file, indent=4)
+    
+    def causlangToJSON(self, causlang):
+        relationships = causlang.split(",")
+        final = []
+        for r in relationships:
+            if ":" in r:
+                i = r.split(":")
+                stuff = {"causer":i[0],"affected":i[1]}
+            else:
+                stuff = {"negated":r[1:]}
+            final.append(stuff)
+        with open("causlang.json","w") as file:
+            json.dump(final,file,indent=4)
 
-bl = Balisong(DEBUG=2)
-
-text = "At the Port of Los Angeles, about one-third of intermodal containers utilize the Port rail network, which includes one near-dock railyard and five on-dock railyards that serve the Port's seven container terminals. The use of on-dock rail is growing annually."
-scenario = "The Port rail network has been destroyed in a storm."
-print(bl.performCausalInference(text, scenario))
+        
