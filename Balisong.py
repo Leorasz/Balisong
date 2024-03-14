@@ -17,6 +17,7 @@ def logError(error):
 
 """
 TODO:
+-Make interpretation of results more natural language
 """
 
 class Balisong:
@@ -42,6 +43,9 @@ class Balisong:
             if self.color == "blue":
                 for child in self.children:
                     child.color = "blue" if child.color != "red" else "red"
+            elif self.color == "red":
+                for child in self.children:
+                    child.color = "red"
             loader += self.children
 
     def cleanText(self, text):
@@ -97,6 +101,9 @@ class Balisong:
                 
             components = relationship.split(":")
             components = [self.cleanText(component) for component in components]
+            for component in components:
+                if component[0] == "-":
+                    logError("You can't start a relationship with a '-'!!")
                 
             if components[0] not in nodenames:  # makes new node
                 causer = self.Node(components[0])
@@ -319,5 +326,3 @@ class Balisong:
             final.append(stuff)
         with open("causlang.json","w") as file:
             json.dump(final,file,indent=4)
-
-        
