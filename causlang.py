@@ -2,7 +2,16 @@ import os
 import json
 from utils import logError, cleanText
 
-DEBUG = int(os.getenv("DEBUG"))
+try:
+    DEBUG = int(os.getenv("DEBUG"))
+except Exception:
+    DEBUG = 0
+    os.environ["DEBUG"] = "0"
+
+"""
+TODO:
+-Optimize causlangToJSONEntity
+"""
 
 class Node:  # node class for the causlang interpreter
     def __init__(self, name):
@@ -132,7 +141,7 @@ def causlangToJSONEntity(causlang):
             nodes.add(components[0])
             nodes.add(components[1])
     for node in nodes:
-        res[node] = {"negated":False,"caused by":[],"affects":[]}
+        res[node] = {"negated":False,"active":True,"caused by":[],"affects":[]}
     for relationship in relationships:
         if relationship[0] == "-":
             res[relationship[1:]]["negated"] = True
@@ -140,5 +149,12 @@ def causlangToJSONEntity(causlang):
             components = relationship.split(":")
             res[components[0]]["affects"].append(components[1])
             res[components[1]]["caused by"].append(components[0])
+    activations = interpretCauslang(causlang)
+    activations = activations.split("\n")
+    for activation in activations:
+        words = activation.split(" ")
+        if words[-1] == "inactive":
+            res[words[0]]["active"] = False
+
     with open("causlangentity.json","w") as file:
         json.dump(res, file, indent=4)

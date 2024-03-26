@@ -5,7 +5,12 @@ from openai import OpenAI
 from utils import logError, cleanText
 
 os.environ["OPENAI_API_KEY"] = input("OpenAI API key: ")
-DEBUG = int(os.getenv("DEBUG"))
+
+try:
+    DEBUG = int(os.getenv("DEBUG"))
+except Exception:
+    DEBUG = 0
+    os.environ["DEBUG"] = "0"
 
 """
 TODO:
