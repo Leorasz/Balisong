@@ -1,6 +1,7 @@
 error_log.log
 validationExamples.json
 test.py
-causlang.json
+causlangentity.json
+causlangrelationship.json
 poladata.json
 

@@ -18,6 +18,7 @@ def logError(error):
 """
 TODO:
 -Make interpretation of results more natural language
+-Handle causal graphs that loop
 """
 
 class Balisong:
@@ -314,7 +315,7 @@ class Balisong:
         with open("poladata.json","w") as file:
             json.dump(final, file, indent=4)
     
-    def causlangToJSON(self, causlang):
+    def causlangToJSONRelationship(self, causlang):
         relationships = causlang.split(",")
         final = []
         for r in relationships:
@@ -324,5 +325,32 @@ class Balisong:
             else:
                 stuff = {"negated":r[1:]}
             final.append(stuff)
-        with open("causlang.json","w") as file:
+        with open("causlangrelationship.json","w") as file:
             json.dump(final,file,indent=4)
+
+    def causlangToJSONEntity(self, causlang):
+        relationships = causlang.split(",")
+        nodes = set()
+        res = {}
+        for relationship in relationships:
+            if relationship[0] == "-":
+                nodes.add(relationship[1:])
+            else:
+                components = relationship.split(":")
+                nodes.add(components[0])
+                nodes.add(components[1])
+        for node in nodes:
+            res[node] = {"negated":False,"caused by":[],"affects":[]}
+        for relationship in relationships:
+            if relationship[0] == "-":
+                res[relationship[1:]]["negated"] = True
+            else:
+                components = relationship.split(":")
+                res[components[0]]["affects"].append(components[1])
+                res[components[1]]["caused by"].append(components[0])
+        with open("causlangentity.json","w") as file:
+            json.dump(res, file, indent=4)
+
+
+
+
