@@ -4,4 +4,6 @@ test.py
 causlangentity.json
 causlangrelationship.json
 poladata.json
+__pycache__
+.DS_Store
 
